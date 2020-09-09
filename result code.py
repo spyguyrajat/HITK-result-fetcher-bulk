@@ -15,6 +15,7 @@ sem = int(input())
 print ("Enter your choice : ")
 print ("1. Get Results sorted alphabetically")
 print ("2. Get Results sorted rankwise")
+f1.write("https://github.com/spyguyrajat\n")
 choice = int(input())
 for x in range(int(start), int(end) + 1) :
 	r = requests.post("http://61.12.70.61:8084/heresult20.aspx", data={'roll': x, 'sem': sem})
