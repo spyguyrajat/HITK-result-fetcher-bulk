@@ -1,10 +1,23 @@
-import os,requests
+import sys,os,requests
 
 def get_data(haystack, needle):
 	a = haystack.split(needle)
 	print("a = ",a)
 	b = a[1].split("</span>")
 	return b[0]
+
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
+def progress(percent, currentRoll):
+	os.system('cls')
+	loaded = int(percent/2.5)
+	if loaded != 40:
+		print('Current Roll -', currentRoll)
+	print('Fetching Results  | ', '#'*loaded , '-'*(40-loaded), ' | ', "{:.2f}".format(percent), '%', sep="")
 
 f1 = open("result.txt", 'w+')
 final = []
@@ -18,9 +31,13 @@ print ("2. Get Results sorted rankwise")
 f1.write("https://github.com/spyguyrajat\n")
 choice = int(input())
 for x in range(int(start), int(end) + 1) :
-	r = requests.post("http://61.12.70.61:8084/heresult20.aspx", data={'roll': x, 'sem': sem})
+	r = requests.post("http://61.12.70.61:8084/heresult20f.aspx", data={'roll': x, 'sem': sem})
 	string = r.text
-	print("string = ",string)
+	percent = ((x - int(start)) *100) / (int(end)-int(start))
+	enablePrint()
+	progress(percent, x)
+	blockPrint()
+	#print("string = ",string)
 	if "No such student exists in this database or the student has not given the particular semester exam" in string:
 		continue
 	name = get_data(string, "<span id=\"lblname\">Name  ")
@@ -35,14 +52,24 @@ for x in range(int(start), int(end) + 1) :
 		SGPA = get_data(string, "<span id=\"lblbottom2\">SGPA       EVEN(8th.) SEMESTER: ")
 	name = name.encode('ascii', 'ignore').decode('ascii')
 	if choice == 1 :
-		f1.write(" ".join([roll, name, SGPA, '\n']))
+		SGPA = str(float(SGPA))
+		SGPA += '0'*(4-len(SGPA))
+		f1.write(" ".join([roll, name, SGPA.rjust(27-len(name)), '\n']))
 	else :
-		tup = (SGPA, name, roll)
+		tup = (float(SGPA), name, roll)
 		final.append(tup)
 	print(x)
 final.sort(reverse = True)
-rank = 1
+rank = 0
+prev_sgpa = '0.00'
 for s, name, r in final:
-	f1.write(" ".join([str(rank), s, r, name, '\n']))
-	rank += 1
+	s = str(s)
+	if len(s) == 3:
+		s += '0'
+	if prev_sgpa == s:
+		f1.write(" ".join([len(str(rank))*' ', s, r, name, '\n']))
+	else:
+		rank += 1
+		f1.write(" ".join([str(rank), s, r, name, '\n']))
+		prev_sgpa = s
 f1.close()
