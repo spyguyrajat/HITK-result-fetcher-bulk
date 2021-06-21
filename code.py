@@ -1,8 +1,10 @@
 import sys,os,requests
 
 def get_data(haystack, needle):
+	print(haystack)
 	a = haystack.split(needle)
-	print("a = ",a)
+	#print("a = ",a)
+	#print(a)
 	b = a[1].split("</span>")
 	return b[0]
 
@@ -31,19 +33,19 @@ print ("2. Get Results sorted rankwise")
 f1.write("https://github.com/spyguyrajat\n")
 choice = int(input())
 for x in range(int(start), int(end) + 1) :
-	r = requests.post("http://61.12.70.61:8084/heresult20f.aspx", data={'roll': x, 'sem': sem})
+	r = requests.post("http://136.232.2.202:8084/hres21o.aspx", data={'roll': x, 'sem': sem})
 	string = r.text
+	#print("string = ",string)
 	percent = ((x - int(start)) *100) / (int(end)-int(start))
 	enablePrint()
 	progress(percent, x)
 	blockPrint()
-	#print("string = ",string)
 	if "No such student exists in this database or the student has not given the particular semester exam" in string:
 		continue
 	name = get_data(string, "<span id=\"lblname\">Name  ")
 	roll = get_data(string, "<span id=\"lblroll\">Roll No.  ")
-	if sem == 2:
-		SGPA = get_data(string, "<span id=\"lblbottom2\">SGPA       EVEN(2nd.) SEMESTER: ")
+	if sem == 7:
+		SGPA = get_data(string, "<span id=\"lblbottom1\">SGPA       ODD(7th.) SEMESTER: ")
 	elif sem == 4:
 		SGPA = get_data(string, "<span id=\"lblbottom2\">SGPA       EVEN(4th.) SEMESTER: ")
 	elif sem == 6 :
