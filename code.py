@@ -25,15 +25,19 @@ f1 = open("result.txt", 'w+')
 final = []
 print ("Enter the roll number range (eg : 16616001001 12616001189) : ")
 start, end = input().split()
-print ("Enter the sem number (eg : 2) : ")
-sem = int(input())
+#print ("Enter the sem number (eg : 2) : ")
+sem = 8 #int(input())
 print ("Enter your choice : ")
 print ("1. Get Results sorted alphabetically")
 print ("2. Get Results sorted rankwise")
-f1.write("https://github.com/spyguyrajat\n")
+f1.write("https://github.com/spyguyrajat/HITK-result-fetcher-bulk\n\n")
 choice = int(input())
+if choice == 1 :
+	f1.write(" ".join(["Roll       ", "Name", "DGPA".rjust(27-4), '\n']))
+else :
+	f1.write(" ".join(["Rank DGPA", "Roll       ", "Name\n"]))
 for x in range(int(start), int(end) + 1) :
-	r = requests.post("http://136.232.2.202:8084/hres21o.aspx", data={'roll': x, 'sem': sem})
+	r = requests.post("http://136.232.2.202:8084/hresult21ef.aspx", data={'roll': x, 'sem': sem})
 	string = r.text
 	#print("string = ",string)
 	percent = ((x - int(start)) *100) / (int(end)-int(start))
@@ -44,14 +48,10 @@ for x in range(int(start), int(end) + 1) :
 		continue
 	name = get_data(string, "<span id=\"lblname\">Name  ")
 	roll = get_data(string, "<span id=\"lblroll\">Roll No.  ")
-	if sem == 7:
-		SGPA = get_data(string, "<span id=\"lblbottom1\">SGPA       ODD(7th.) SEMESTER: ")
-	elif sem == 4:
-		SGPA = get_data(string, "<span id=\"lblbottom2\">SGPA       EVEN(4th.) SEMESTER: ")
-	elif sem == 6 :
-		SGPA = get_data(string, "<span id=\"lblbottom2\">SGPA       EVEN(6th.) SEMESTER: ")
-	else :
-		SGPA = get_data(string, "<span id=\"lblbottom2\">SGPA       EVEN(8th.) SEMESTER: ")
+	if sem == 8 and "<span id=\"lbldgpa\">DGPA       " in string:
+		SGPA = get_data(string, "<span id=\"lbldgpa\">DGPA       ")
+	else : 
+		SGPA = "0.00"
 	name = name.encode('ascii', 'ignore').decode('ascii')
 	if choice == 1 :
 		SGPA = str(float(SGPA))
@@ -69,9 +69,10 @@ for s, name, r in final:
 	if len(s) == 3:
 		s += '0'
 	if prev_sgpa == s:
-		f1.write(" ".join([len(str(rank))*' ', s, r, name, '\n']))
+		f1.write(" ".join([len(str(rank))*' ', s.rjust(7), r, name, '\n']))
 	else:
 		rank += 1
-		f1.write(" ".join([str(rank), s, r, name, '\n']))
+		f1.write(" ".join([str(rank),"  ", s.rjust(4), r, name, '\n']))
 		prev_sgpa = s
+f1.write("https://github.com/spyguyrajat/HITK-result-fetcher-bulk\n")
 f1.close()
